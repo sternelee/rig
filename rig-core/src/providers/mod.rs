@@ -11,6 +11,12 @@
 //! - DeepSeek
 //! - Azure OpenAI
 //! - Mira
+//! - ChatGLM
+//! - z.ai
+//! - 阿里 DashScope
+//! - 豆包 Volces
+//! - Vercel AI Gateway
+//! - SiliconFlow
 //!
 //! Each provider has its own module, which contains a `Client` implementation that can
 //! be used to initialize completion and embedding models and execute requests to those models.
@@ -47,7 +53,9 @@
 //! be used with the Cohere provider client.
 pub mod anthropic;
 pub mod azure;
+pub mod chatglm;
 pub mod cohere;
+pub mod dashscope;
 pub mod deepseek;
 pub mod galadriel;
 pub mod gemini;
@@ -61,6 +69,10 @@ pub mod ollama;
 pub mod openai;
 pub mod openrouter;
 pub mod perplexity;
+pub mod siliconflow;
 pub mod together;
+pub mod vercel_ai_gateway;
+pub mod volces;
 pub mod voyageai;
 pub mod xai;
+pub mod z_ai;
