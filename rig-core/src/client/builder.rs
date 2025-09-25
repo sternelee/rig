@@ -3,8 +3,9 @@ use crate::client::ProviderClient;
 use crate::completion::{CompletionRequest, Message};
 use crate::embeddings::embedding::EmbeddingModelDyn;
 use crate::providers::{
-    anthropic, azure, cohere, deepseek, galadriel, gemini, groq, huggingface, hyperbolic, mira,
-    moonshot, ollama, openai, openrouter, perplexity, together, xai,
+    anthropic, azure, chatglm, cohere, dashscope, deepseek, galadriel, gemini, groq, huggingface,
+    hyperbolic, mira, moonshot, ollama, openai, openrouter, perplexity, siliconflow, together,
+    vercel_ai_gateway, volces, xai, z_ai,
 };
 use crate::streaming::StreamingCompletionResponse;
 use crate::transcription::TranscriptionModelDyn;
@@ -167,6 +168,36 @@ impl<'a> DynClientBuilder {
                 DefaultProviders::PERPLEXITY,
                 perplexity::Client::from_env_boxed,
                 perplexity::Client::from_val_boxed,
+            ),
+            ClientFactory::new(
+                DefaultProviders::CHATGLM,
+                chatglm::Client::from_env_boxed,
+                chatglm::Client::from_val_boxed,
+            ),
+            ClientFactory::new(
+                DefaultProviders::DASHSCOPE,
+                dashscope::Client::from_env_boxed,
+                dashscope::Client::from_val_boxed,
+            ),
+            ClientFactory::new(
+                DefaultProviders::SILICONFLOW,
+                siliconflow::Client::from_env_boxed,
+                siliconflow::Client::from_val_boxed,
+            ),
+            ClientFactory::new(
+                DefaultProviders::VERCEL_AI_GATEWAY,
+                vercel_ai_gateway::Client::from_env_boxed,
+                vercel_ai_gateway::Client::from_val_boxed,
+            ),
+            ClientFactory::new(
+                DefaultProviders::VOLCES,
+                volces::Client::from_env_boxed,
+                volces::Client::from_val_boxed,
+            ),
+            ClientFactory::new(
+                DefaultProviders::Z_AI,
+                z_ai::Client::from_env_boxed,
+                z_ai::Client::from_val_boxed,
             ),
         ])
     }
@@ -704,4 +735,10 @@ impl DefaultProviders {
     pub const MISTRAL: &'static str = "mistral";
     pub const OLLAMA: &'static str = "ollama";
     pub const PERPLEXITY: &'static str = "perplexity";
+    pub const CHATGLM: &'static str = "chatglm";
+    pub const DASHSCOPE: &'static str = "dashscope";
+    pub const SILICONFLOW: &'static str = "siliconflow";
+    pub const VERCEL_AI_GATEWAY: &'static str = "vercel_ai_gateway";
+    pub const VOLCES: &'static str = "volces";
+    pub const Z_AI: &'static str = "z_ai";
 }

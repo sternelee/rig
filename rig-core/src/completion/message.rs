@@ -68,6 +68,7 @@ pub enum AssistantContent {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[non_exhaustive]
 pub struct Reasoning {
     pub id: Option<String>,
     pub reasoning: Vec<String>,
@@ -82,21 +83,20 @@ impl Reasoning {
         }
     }
 
+    pub fn optional_id(mut self, id: Option<String>) -> Self {
+        self.id = id;
+        self
+    }
+    pub fn with_id(mut self, id: String) -> Self {
+        self.id = Some(id);
+        self
+    }
+
     pub fn multi(input: Vec<String>) -> Self {
         Self {
             id: None,
             reasoning: input,
         }
-    }
-
-    pub fn optional_id(mut self, id: Option<String>) -> Self {
-        self.id = id;
-        self
-    }
-
-    pub fn with_id(mut self, id: String) -> Self {
-        self.id = Some(id);
-        self
     }
 }
 
@@ -167,9 +167,33 @@ pub struct Image {
     pub additional_params: Option<serde_json::Value>,
 }
 
+impl Image {
+    pub fn try_into_url(self) -> Result<String, MessageError> {
+        match self.data {
+            DocumentSourceKind::Url(url) => Ok(url),
+            DocumentSourceKind::Base64(data) => {
+                let Some(media_type) = self.media_type else {
+                    return Err(MessageError::ConversionError(
+                        "A media type is required to create a valid base64-encoded image URL"
+                            .to_string(),
+                    ));
+                };
+
+                Ok(format!(
+                    "data:image/{ty};base64,{data}",
+                    ty = media_type.to_mime_type()
+                ))
+            }
+            unknown => Err(MessageError::ConversionError(format!(
+                "Tried to convert unknown type to a URL: {unknown:?}"
+            ))),
+        }
+    }
+}
+
 /// The kind of image source (to be used).
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Default)]
-#[serde(tag = "type", rename_all = "camelCase")]
+#[serde(tag = "type", content = "value", rename_all = "camelCase")]
 #[non_exhaustive]
 pub enum DocumentSourceKind {
     /// A file URL/URI.
