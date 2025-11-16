@@ -14,6 +14,7 @@
 //! ```
 
 use rig::{
+    client::CompletionClient,
     completion::Prompt,
     providers::anthropic::{self, CLAUDE_3_5_SONNET},
 };

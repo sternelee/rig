@@ -14,8 +14,9 @@
 //! ```
 
 use rig::{
+    client::CompletionClient,
     completion::Prompt,
-    providers::gemini::{self, GEMINI_2_0_FLASH},
+    providers::gemini,
 };
 use rmcp::{
     RoleServer, ServerHandler, ServiceExt,
@@ -312,7 +313,7 @@ async fn main() -> anyhow::Result<()> {
         gemini::Client::new(&env::var("GEMINI_API_KEY").expect("GEMINI_API_KEY not set"));
 
     let agent = gemini_client
-        .agent(GEMINI_2_0_FLASH)
+        .agent(gemini::completion::GEMINI_2_0_FLASH)
         .preamble(
             "You are a helpful assistant with access to tools via Model Context Protocol (MCP). \
             Use the available tools to answer user questions accurately and efficiently.",
