@@ -62,7 +62,6 @@
 //! ] }
 //! ```
 
-#![cfg(feature = "rmcp")]
 #![cfg_attr(docsrs, doc(cfg(feature = "rmcp")))]
 
 // Re-export commonly used rmcp types for convenience
