@@ -135,6 +135,10 @@ pub mod tool;
 pub mod tools;
 pub mod transcription;
 pub mod vector_store;
+
+#[cfg(feature = "rmcp")]
+#[cfg_attr(docsrs, doc(cfg(feature = "rmcp")))]
+pub mod mcp;
 pub mod wasm_compat;
 
 // Re-export commonly used types and traits

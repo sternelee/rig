@@ -63,6 +63,7 @@ More information about this crate can be found in the [official](https://docs.ri
 - 10+ vector store integrations, all under one singular unified interface
 - Full support for LLM completion and embedding workflows
 - Support for transcription, audio generation and image generation model capabilities
+- Model Context Protocol (MCP) integration for agent tools and capabilities
 - Integrate LLMs in your app with minimal boilerplate
 - Full WASM compatibility (core library only)
 
@@ -108,6 +109,36 @@ Note using `#[tokio::main]` requires you enable tokio's `macros` and `rt-multi-t
 or just `full` to enable all features (`cargo add tokio --features macros,rt-multi-thread`).
 
 You can find more examples each crate's `examples` (ie. [`rig-core/examples`](./rig-core/examples)) directory. More detailed use cases walkthroughs are regularly published on our [Dev.to Blog](https://dev.to/0thtachi) and added to Rig's official documentation [(docs.rig.rs)](http://docs.rig.rs).
+
+## Model Context Protocol (MCP) Integration
+
+Rig supports the [Model Context Protocol (MCP)](https://spec.modelcontextprotocol.io/) for integrating with agent tools and capabilities. This enables seamless integration with MCP servers like Claude Code, Gemini CLI, and custom tool servers.
+
+### Quick MCP Example
+
+```rust
+use rig::{completion::Prompt, providers::anthropic};
+use rmcp::ServiceExt;
+
+// Connect to MCP server
+let transport = rmcp::transport::StreamableHttpClientTransport::from_uri("http://localhost:3000");
+let client = /* ... connect to MCP server ... */;
+let tools = client.list_tools(Default::default()).await?.tools;
+
+// Create agent with MCP tools
+let agent = anthropic::Client::from_env()
+    .agent(anthropic::CLAUDE_3_5_SONNET)
+    .preamble("You are a helpful assistant with access to MCP tools.")
+    .rmcp_tools(tools, client.peer().to_owned())
+    .build();
+
+let response = agent.prompt("Use the calculator to compute 2 + 2").await?;
+```
+
+See [`rig-core/MCP_INTEGRATION_GUIDE.md`](./rig-core/MCP_INTEGRATION_GUIDE.md) for comprehensive documentation and:
+- [`examples/mcp_with_claude.rs`](./rig-core/examples/mcp_with_claude.rs) - Claude Code integration
+- [`examples/mcp_with_gemini.rs`](./rig-core/examples/mcp_with_gemini.rs) - Gemini CLI integration
+- [`examples/rmcp.rs`](./rig-core/examples/rmcp.rs) - Basic MCP example
 
 ## Supported Integrations
 

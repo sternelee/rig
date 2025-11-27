@@ -70,6 +70,7 @@ rmcp = { version = "0.9", features = [
     "transport-worker",
 ] }
 axum = "0.8.4"
+chrono = { workspace = true }
 
 # required for otel
 opentelemetry = "0.30.0"
@@ -166,3 +167,11 @@ name = "request_hook"
 [[example]]
 name = "discord_bot"
 required-features = ["discord-bot"]
+
+[[example]]
+name = "mcp_with_claude"
+required-features = ["rmcp"]
+
+[[example]]
+name = "mcp_with_gemini"
+required-features = ["rmcp"]
