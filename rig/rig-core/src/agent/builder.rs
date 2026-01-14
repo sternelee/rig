@@ -206,11 +206,10 @@ where
         
         // Merge the skill's preamble with existing preamble
         if let Some(skill_preamble) = components.preamble {
-            self.preamble = Some(format!(
-                "{}\n{}",
-                self.preamble.unwrap_or_default(),
-                skill_preamble
-            ));
+            self.preamble = Some(match self.preamble {
+                Some(existing) if !existing.is_empty() => format!("{}\n{}", existing, skill_preamble),
+                _ => skill_preamble,
+            });
         }
 
         // Add skill's context documents
@@ -561,11 +560,10 @@ where
         
         // Merge the skill's preamble with existing preamble
         if let Some(skill_preamble) = components.preamble {
-            self.preamble = Some(format!(
-                "{}\n{}",
-                self.preamble.unwrap_or_default(),
-                skill_preamble
-            ));
+            self.preamble = Some(match self.preamble {
+                Some(existing) if !existing.is_empty() => format!("{}\n{}", existing, skill_preamble),
+                _ => skill_preamble,
+            });
         }
 
         // Add skill's context documents
