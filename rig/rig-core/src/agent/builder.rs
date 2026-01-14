@@ -183,7 +183,10 @@ where
     /// a preamble, and context documents. This is a convenient way to add
     /// pre-packaged capabilities to an agent.
     /// 
-    /// Note: Skills are consumed when added to an agent.
+    /// Note: Skills are consumed when added to an agent. This method transitions
+    /// from `AgentBuilder` to `AgentBuilderSimple`. If you need to add multiple
+    /// skills or mix skills with individual tools, call `.skill()` on the returned
+    /// `AgentBuilderSimple` instead.
     /// 
     /// # Example
     /// ```rust,ignore
