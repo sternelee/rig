@@ -16,6 +16,18 @@
 //! It allows configuring the model, preamble, context documents, tools, temperature, and additional parameters
 //! before building the agent.
 //!
+//! # Skills
+//! 
+//! Skills are a higher-level abstraction for composing agent capabilities. A [Skill] can provide:
+//! - A set of tools
+//! - A preamble (system prompt addition)
+//! - Context documents
+//!
+//! Skills can be added to agents using the `.skill()` method on the builder. This makes it easy
+//! to create reusable, composable capabilities that can be shared across multiple agents.
+//!
+//! See the [skill] module documentation and the `agent_with_skills.rs` example for more details.
+//!
 //! # Example
 //! ```rust
 //! use rig::{
