@@ -109,6 +109,7 @@
 mod builder;
 mod completion;
 pub(crate) mod prompt_request;
+mod skill;
 mod tool;
 
 pub use crate::message::Text;
@@ -120,3 +121,4 @@ pub use prompt_request::streaming::{
 };
 pub use prompt_request::{CancelSignal, PromptRequest, PromptResponse};
 pub use prompt_request::{PromptHook, StreamingPromptHook};
+pub use skill::{SimpleSkill, SimpleSkillBuilder, Skill, SkillComponents};

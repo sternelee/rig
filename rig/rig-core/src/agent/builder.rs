@@ -16,7 +16,7 @@ use crate::{
 #[cfg_attr(docsrs, doc(cfg(feature = "rmcp")))]
 use crate::tool::rmcp::McpTool as RmcpTool;
 
-use super::Agent;
+use super::{Agent, Skill};
 
 /// A builder for creating an agent
 ///
@@ -159,6 +159,66 @@ where
     pub fn tools(self, tools: Vec<Box<dyn ToolDyn>>) -> AgentBuilderSimple<M> {
         let static_tools = tools.iter().map(|tool| tool.name()).collect();
         let tools = ToolSet::from_tools_boxed(tools);
+
+        AgentBuilderSimple {
+            name: self.name,
+            description: self.description,
+            model: self.model,
+            preamble: self.preamble,
+            static_context: self.static_context,
+            static_tools,
+            additional_params: self.additional_params,
+            max_tokens: self.max_tokens,
+            dynamic_context: vec![],
+            dynamic_tools: vec![],
+            temperature: self.temperature,
+            tools,
+            tool_choice: self.tool_choice,
+        }
+    }
+
+    /// Add a skill to the agent
+    /// 
+    /// A skill is a higher-level abstraction that provides a set of tools,
+    /// a preamble, and context documents. This is a convenient way to add
+    /// pre-packaged capabilities to an agent.
+    /// 
+    /// Note: Skills are consumed when added to an agent.
+    /// 
+    /// # Example
+    /// ```rust,ignore
+    /// use rig::{providers::openai, agent::{AgentBuilder, SimpleSkill}};
+    /// 
+    /// let openai = openai::Client::from_env();
+    /// let model = openai.completion_model("gpt-4o");
+    /// 
+    /// let skill = SimpleSkill::builder()
+    ///     .name("calculator")
+    ///     .preamble("You can perform calculations")
+    ///     .build();
+    /// 
+    /// let agent = AgentBuilder::new(model)
+    ///     .skill(skill)
+    ///     .build();
+    /// ```
+    pub fn skill(mut self, skill: impl Skill + 'static) -> AgentBuilderSimple<M> {
+        let components = skill.into_components();
+        
+        // Merge the skill's preamble with existing preamble
+        if let Some(skill_preamble) = components.preamble {
+            self.preamble = Some(format!(
+                "{}\n{}",
+                self.preamble.unwrap_or_default(),
+                skill_preamble
+            ));
+        }
+
+        // Add skill's context documents
+        self.static_context.extend(components.context_documents);
+
+        // Get the skill's tools
+        let static_tools: Vec<String> = components.tools.iter().map(|tool| tool.name()).collect();
+        let tools = ToolSet::from_tools_boxed(components.tools);
 
         AgentBuilderSimple {
             name: self.name,
@@ -468,6 +528,55 @@ where
         let tools = ToolSet::from_tools_boxed(tools);
         self.tools.add_tools(tools);
         self.static_tools.extend(toolnames);
+        self
+    }
+
+    /// Add a skill to the agent
+    /// 
+    /// A skill is a higher-level abstraction that provides a set of tools,
+    /// a preamble, and context documents. This is a convenient way to add
+    /// pre-packaged capabilities to an agent.
+    /// 
+    /// Note: Skills are consumed when added to an agent.
+    /// 
+    /// # Example
+    /// ```rust,ignore
+    /// use rig::{providers::openai, agent::{AgentBuilder, SimpleSkill}};
+    /// 
+    /// let openai = openai::Client::from_env();
+    /// let model = openai.completion_model("gpt-4o");
+    /// 
+    /// let skill = SimpleSkill::builder()
+    ///     .name("calculator")
+    ///     .preamble("You can perform calculations")
+    ///     .build();
+    /// 
+    /// let agent = AgentBuilder::new(model)
+    ///     .tool(some_tool)
+    ///     .skill(skill)
+    ///     .build();
+    /// ```
+    pub fn skill(mut self, skill: impl Skill + 'static) -> Self {
+        let components = skill.into_components();
+        
+        // Merge the skill's preamble with existing preamble
+        if let Some(skill_preamble) = components.preamble {
+            self.preamble = Some(format!(
+                "{}\n{}",
+                self.preamble.unwrap_or_default(),
+                skill_preamble
+            ));
+        }
+
+        // Add skill's context documents
+        self.static_context.extend(components.context_documents);
+
+        // Add skill's tools
+        let toolnames: Vec<String> = components.tools.iter().map(|tool| tool.name()).collect();
+        let tools = ToolSet::from_tools_boxed(components.tools);
+        self.tools.add_tools(tools);
+        self.static_tools.extend(toolnames);
+
         self
     }
 
